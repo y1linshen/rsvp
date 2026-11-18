@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keys as Letters</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #171717; font: 13px/1.4 ui-monospace, monospace; }
+    main { position: relative; height: calc(100dvh - 52px); overflow: hidden; }
+    canvas { display: block; }
+    footer { height: 52px; border-top: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; }
+    button, input { font: inherit; color: inherit; }
+    button { background: white; border: 1px solid #aaa; padding: 5px 8px; cursor: pointer; }
+    #keyboard { opacity: 0; position: absolute; left: 0; top: 0; width: 1px; height: 1px; padding: 0; border: 0; font-size: 16px; }
+    #controls { display: flex; gap: 6px; }
+    @media (max-width: 510px) { #hint { display: none; } }
+  </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+  <script defer src="sketch.js"></script>
+</head>
+<body>
+  <main id="paper" aria-label="Typewriter paper">
+    <input id="keyboard" aria-label="Type on the paper" autocomplete="off" autocapitalize="none" spellcheck="false">
+  </main>
+  <footer>
+    <span>Keys as Letters</span>
+    <span id="hint">Type on the page · , runs the demo</span>
+    <div id="controls">
+      <button id="type" type="button">Type</button>
+      <button id="demo" type="button">Demo</button>
+      <button id="sound" type="button" aria-pressed="true">Sound</button>
+    </div>
+  </footer>
+</body>
+</html>
