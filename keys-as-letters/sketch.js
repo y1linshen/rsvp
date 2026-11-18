@@ -1,6 +1,5 @@
 const paper = document.querySelector('#paper');
 const keyboard = document.querySelector('#keyboard');
-const demoButton = document.querySelector('#demo');
 const soundButton = document.querySelector('#sound');
 
 const glyphNames = new Map([...('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')].map(key => [key, key]));
@@ -9,18 +8,6 @@ for (const [key, name] of Object.entries({
   "'": 'apostrophe', '.': 'period', ' ': 'space',
   Shift: 'shift', Enter: 'return', Backspace: 'delete'
 })) glyphNames.set(key, name);
-
-const demoLines = [
-  [...'..loading...'], [...'please'], [...'type.'],
-  [...'delete', ...Array(6).fill('Backspace')],
-  [...'shift', 'Shift'], [...'space', ' '],
-  [...'how'], [...'to'], [...'mimic'], ['a'], [...'typewriter;0']
-];
-const demoIntro = [
-  ...demoLines.flatMap((line, index) => index === demoLines.length - 1 ? line : [...line, 'Enter']),
-  'ArrowDown'
-];
-const demoKeys = [...demoIntro, ...Array(69).fill('Backspace'), 'ArrowDown'];
 
 new p5(p => {
   const margin = 4;
@@ -47,8 +34,6 @@ new p5(p => {
   document.addEventListener('keydown', unlockAudio);
   const activeSounds = new Set();
   let soundEnabled = true;
-  let demoIndex = -1;
-  let nextDemoKey = 0;
   let lastInput = 0;
   let scroll = 0;
   let targetScroll = 0;
@@ -84,17 +69,6 @@ new p5(p => {
     voice.start();
   }
 
-  function stopDemo() {
-    demoIndex = -1;
-    demoButton.textContent = 'Demo';
-  }
-
-  function startDemo() {
-    demoIndex = 0;
-    nextDemoKey = p.millis() + 350;
-    demoButton.textContent = 'Stop';
-  }
-
   function strike(key) {
     if (key === 'ArrowUp' || key === 'ArrowDown') {
       if (key === 'ArrowDown') play('ding');
@@ -121,14 +95,6 @@ new p5(p => {
 
   p.draw = () => {
     const now = p.millis();
-    if (demoIndex >= 0 && now >= nextDemoKey) {
-      const key = demoKeys[demoIndex++];
-      strike(key);
-      nextDemoKey = now + (demoIndex === demoIntro.length
-        ? 3100 : key === 'Backspace' && demoIndex > demoKeys.length - 70 ? 100 : 350);
-      if (demoIndex === demoKeys.length) stopDemo();
-    }
-
     p.background(255);
     let x = 0;
     let y = 0;
@@ -166,16 +132,12 @@ new p5(p => {
     if (event.target.closest('button') && (event.key === 'Enter' || event.key === ' ')) return;
     const handled = strike(event.key === 'Delete' ? 'Backspace' : event.key);
     if (handled) event.preventDefault();
-    if (event.key === ',' && !event.repeat) startDemo();
   });
 
   keyboard.addEventListener('input', event => {
     if (event.inputType === 'deleteContentBackward') strike('Backspace');
     else if (event.inputType === 'insertLineBreak') strike('Enter');
-    else for (const key of keyboard.value) {
-      strike(key);
-      if (key === ',') startDemo();
-    }
+    else for (const key of keyboard.value) strike(key);
     keyboard.value = '';
   });
 
@@ -187,10 +149,6 @@ new p5(p => {
   }, { passive: false });
 
   document.querySelector('#type').addEventListener('click', () => keyboard.focus({ preventScroll: true }));
-  demoButton.addEventListener('click', () => {
-    if (demoIndex < 0) startDemo();
-    else stopDemo();
-  });
   soundButton.addEventListener('click', () => {
     soundEnabled = !soundEnabled;
     soundButton.setAttribute('aria-pressed', String(soundEnabled));

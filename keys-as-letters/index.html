@@ -17,7 +17,7 @@
     @media (max-width: 510px) { #hint { display: none; } }
   </style>
   <script defer src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
-  <script defer src="sketch.js"></script>
+  <script defer src="sketch.js?v=manual"></script>
 </head>
 <body>
   <main id="paper" aria-label="Typewriter paper">
@@ -25,10 +25,9 @@
   </main>
   <footer>
     <span>Keys as Letters</span>
-    <span id="hint">Type on the page · , runs the demo</span>
+    <span id="hint">Type on the page</span>
     <div id="controls">
       <button id="type" type="button">Type</button>
-      <button id="demo" type="button">Demo</button>
       <button id="sound" type="button" aria-pressed="true">Sound</button>
     </div>
   </footer>
