@@ -1,6 +1,5 @@
 const paper = document.querySelector('#paper');
 const keyboard = document.querySelector('#keyboard');
-const soundButton = document.querySelector('#sound');
 
 const glyphNames = new Map([...('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')].map(key => [key, key]));
 for (const [key, name] of Object.entries({
@@ -32,8 +31,6 @@ new p5(p => {
   }
   document.addEventListener('pointerdown', unlockAudio);
   document.addEventListener('keydown', unlockAudio);
-  const activeSounds = new Set();
-  let soundEnabled = true;
   let lastInput = 0;
   let scroll = 0;
   let targetScroll = 0;
@@ -57,14 +54,12 @@ new p5(p => {
 
   function play(name) {
     const sample = samples.get(name);
-    if (!soundEnabled || !sample) return;
+    if (!sample) return;
     const voice = audio.createBufferSource();
     voice.buffer = sample;
     voice.connect(audio.destination);
-    activeSounds.add(voice);
     voice.onended = () => {
       voice.disconnect();
-      activeSounds.delete(voice);
     };
     voice.start();
   }
@@ -147,15 +142,4 @@ new p5(p => {
     followCursor = false;
     targetScroll = p.constrain(targetScroll + Math.sign(event.deltaY) * 23, 0, cursorY);
   }, { passive: false });
-
-  document.querySelector('#type').addEventListener('click', () => keyboard.focus({ preventScroll: true }));
-  soundButton.addEventListener('click', () => {
-    soundEnabled = !soundEnabled;
-    soundButton.setAttribute('aria-pressed', String(soundEnabled));
-    soundButton.textContent = soundEnabled ? 'Sound' : 'Muted';
-    if (!soundEnabled) {
-      for (const voice of activeSounds) voice.stop();
-      activeSounds.clear();
-    }
-  });
 });
